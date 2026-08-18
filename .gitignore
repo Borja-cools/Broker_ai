@@ -1,0 +1,22 @@
+# Python maakt deze tijdelijke bestanden automatisch.
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Lokale virtuele omgevingen horen niet in Git.
+.venv/
+
+# Instellingen en geheime sleutels blijven lokaal.
+.env
+
+# Uitvoer van tests en ontwikkeltools.
+.pytest_cache/
+.coverage
+htmlcov/
+logs/
+
+# Bestanden van editors en besturingssystemen.
+.idea/
+.DS_Store

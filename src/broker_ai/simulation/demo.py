@@ -1,0 +1,65 @@
+"""Een zichtbaar demoscenario zonder externe verbindingen of echt geld."""
+
+from decimal import Decimal
+
+from broker_ai.brokers import SimulatedBroker
+from broker_ai.domain import Currency, Exchange, Instrument, Order, OrderSide, Portfolio
+
+
+def format_euro(amount: Decimal) -> str:
+    """Formatteer een bedrag eenvoudig als eurotekst met twee decimalen."""
+
+    return f"€{amount:.2f}"
+
+
+def run_demo() -> str:
+    """Voer een vaste koop en verkoop uit en geef een leesbaar rapport terug."""
+
+    portfolio = Portfolio(cash_balance=Decimal("5000.00"))
+    asml = Instrument(
+        symbol="ASML",
+        name="ASML Holding",
+        exchange=Exchange.EURONEXT_AMSTERDAM,
+        currency=Currency.EUR,
+    )
+    buy_order = Order(
+        instrument=asml,
+        side=OrderSide.BUY,
+        quantity=3,
+        price=Decimal("600.00"),
+    )
+
+    sell_order = Order(
+        instrument=asml,
+        side=OrderSide.SELL,
+        quantity=1,
+        price=Decimal("700.00"),
+    )
+    current_price = Decimal("650.00")
+
+    broker = SimulatedBroker(fee_per_order=Decimal("1.00"))
+    buy_execution = broker.execute(buy_order, portfolio)
+    sell_execution = broker.execute(sell_order, portfolio)
+    position = portfolio.get_position("ASML")
+
+    if position is None:
+        raise RuntimeError("Demo-uitvoering leverde onverwacht geen positie op.")
+
+    return (
+        "DEMO — geen echte order\n"
+        f"Instrument: {position.instrument.name} ({position.instrument.symbol})\n"
+        f"Gekocht: {buy_order.quantity} aandelen à {format_euro(buy_order.price)}\n"
+        f"Koopwaarde: {format_euro(buy_execution.executed_value)}\n"
+        f"Kosten kooporder: {format_euro(buy_execution.fee)}\n"
+        f"Verkocht: {sell_order.quantity} aandeel à {format_euro(sell_order.price)}\n"
+        f"Verkoopwaarde: {format_euro(sell_execution.executed_value)}\n"
+        f"Kosten verkooporder: {format_euro(sell_execution.fee)}\n"
+        f"Resterende positie: {position.quantity} aandelen\n"
+        f"Resterende cash: {format_euro(portfolio.cash_balance)}\n"
+        f"Aangenomen actuele prijs: {format_euro(current_price)}\n"
+        f"Actuele positiewaarde: {format_euro(position.market_value(current_price))}\n"
+        f"Gerealiseerde winst: {format_euro(portfolio.realized_profit)}\n"
+        f"Ongerealiseerde winst: {format_euro(position.unrealized_profit(current_price))}\n"
+        f"Totale transactiekosten: {format_euro(buy_execution.fee + sell_execution.fee)}\n"
+        f"Status: {sell_execution.status.value.upper()}"
+    )
