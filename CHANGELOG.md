@@ -9,6 +9,7 @@ Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehoud
 - Account-, positie-, IEX-marktdata-, order-, annulering- en reconciliatievertaling.
 - Idempotente orderindiening en expliciete broker- en netwerkfouten.
 - Alleen-lezen `broker-ai alpaca-check` voor een toekomstige accountkoppeling.
+- Begeleide eerste AAPL-paper-order met harde limieten en exacte bevestiging.
 - Contracttests met een volledig nagebootste Alpaca API; geen echte sleutels vereist.
 
 ## 0.6.0 — Fase 5

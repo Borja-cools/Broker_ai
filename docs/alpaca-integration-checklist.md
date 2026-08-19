@@ -16,7 +16,8 @@
 
 - [ ] Paper API-sleutels lokaal instellen; nooit opslaan in Git.
 - [ ] Alleen-lezen `broker-ai alpaca-check` uitvoeren.
-- [ ] Eén klein handmatig ordervoorstel door de risk engine sturen.
+- [x] Begeleide eerste order met exacte bevestiging en verplichte risk engine bouwen.
+- [ ] Eén kleine handmatig bevestigde paper-order uitvoeren.
 - [ ] Order in Alpaca-dashboard vergelijken met Broker AI-auditlog.
 - [ ] Annulering, gedeeltelijke uitvoering en markt-sluiting observeren.
 - [ ] Dagelijkse reconciliatie en waarschuwingen activeren.

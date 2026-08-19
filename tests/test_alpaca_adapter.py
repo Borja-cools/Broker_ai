@@ -14,6 +14,7 @@ from broker_ai.brokers import (
     BrokerOrderStatus,
     ConnectionState,
 )
+from broker_ai.brokers.alpaca_onboarding import CONFIRMATION, run_first_paper_order
 from broker_ai.domain import Currency, Exchange, Instrument, Order, OrderSide
 
 
@@ -25,16 +26,16 @@ class FakeAlpaca:
     def __init__(self) -> None:
         self.order_status = "new"
         self.order_posts = 0
+        self.positions = [
+            {"symbol": "AAPL", "qty": "2", "avg_entry_price": "190.50"}
+        ]
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         path = request.url.path
         if path == "/v2/account":
             return httpx.Response(200, json={"cash": "100000.00"})
         if path == "/v2/positions":
-            return httpx.Response(
-                200,
-                json=[{"symbol": "AAPL", "qty": "2", "avg_entry_price": "190.50"}],
-            )
+            return httpx.Response(200, json=self.positions)
         if path == "/v2/stocks/AAPL/trades/latest":
             return httpx.Response(200, json={"trade": {"p": 201.25, "t": NOW}})
         if path == "/v2/orders" and request.method == "POST":
@@ -134,6 +135,27 @@ class AlpacaPaperBrokerAdapterTest(unittest.IsolatedAsyncioTestCase):
         )
         with self.assertRaisesRegex(BrokerError, "alleen USD"):
             await self.adapter.get_market_price(instrument)
+
+    async def test_first_order_requires_exact_human_confirmation(self) -> None:
+        self.fake.positions = []
+        result = await run_first_paper_order(self.adapter, ask=lambda _: "nee")
+
+        self.assertIn("geannuleerd", result)
+        self.assertEqual(self.fake.order_posts, 0)
+
+    async def test_first_order_passes_risk_engine_then_reaches_paper_api(self) -> None:
+        self.fake.positions = []
+        prompts: list[str] = []
+
+        def confirm(prompt: str) -> str:
+            prompts.append(prompt)
+            return CONFIRMATION
+
+        result = await run_first_paper_order(self.adapter, ask=confirm)
+
+        self.assertIn("PAPER-ORDER NAAR ALPACA", result)
+        self.assertIn("Risk engine: GOEDGEKEURD", prompts[0])
+        self.assertEqual(self.fake.order_posts, 1)
 
 
 if __name__ == "__main__":

@@ -110,6 +110,16 @@ broker-ai alpaca-check
 De adapter accepteert uitsluitend `https://paper-api.alpaca.markets`. Een live Alpaca-URL
 wordt vóór iedere netwerkverbinding geweigerd. Zet sleutels nooit in broncode of Git.
 
+De begeleide eerste paper-order gebruikt één AAPL-aandeel, de actuele IEX-koers als
+limitprijs, strikte onboardinglimieten en een exacte terminalbevestiging:
+
+```bash
+broker-ai alpaca-first-order
+```
+
+Dit commando is uitsluitend bedoeld nadat `alpaca-check` geslaagd is. Het kan geen live
+order plaatsen, maar verandert bij bevestiging wel de gesimuleerde Alpaca-portefeuille.
+
 Start de lokale API nadat je een geheim van minimaal 32 tekens hebt ingesteld:
 
 ```bash
