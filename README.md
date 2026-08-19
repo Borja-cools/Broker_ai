@@ -7,7 +7,7 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 > **Veiligheidsstatus:** alleen lokale simulatie is toegestaan. AI, paper trading en
 > live trading zijn nog niet aangesloten.
 
-## Wat werkt al? (Fase 4)
+## Wat werkt al? (Fase 5)
 
 - Gevalideerde configuratie met veilige standaardwaarden.
 - Cashportefeuille en posities met `Decimal`-berekeningen.
@@ -34,6 +34,12 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 - Idempotente indiening en annulering zonder dubbele orderuitvoering.
 - Begrensde retries, time-outs en vertaling van tijdelijke brokerfouten.
 - Statusreconciliatie en gedeelde contracttests voor iedere adapter.
+- Lokale FastAPI-server met versiebeheer onder `/api/v1` en OpenAPI-documentatie.
+- SQLite-migratie en tabellen voor gebruikers, bots, snapshots, analyses en orders.
+- Bearer-authenticatie, admin/viewer-autorisatie en rate limiting.
+- Gespecialiseerde bots met `manual`, `automatic_limited` of `disabled` goedkeuring.
+- Auditlog, request-ID's, gestructureerde logging, metrics en health check.
+- Consistente SQLite-back-up en Docker/deploymentconfiguratie.
 
 ## Vereisten
 
@@ -88,6 +94,16 @@ Bekijk de lokale asynchrone paper-brokerstroom:
 ```bash
 broker-ai broker-demo
 ```
+
+Start de lokale API nadat je een geheim van minimaal 32 tekens hebt ingesteld:
+
+```bash
+export BROKER_AI_API_TOKEN="vervang-dit-door-een-lang-willekeurig-geheim"
+broker-ai serve
+```
+
+Open daarna [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) voor de interactieve
+API-documentatie. De server luistert standaard uitsluitend op je eigen computer.
 
 Toon beschikbare opties:
 
@@ -144,11 +160,13 @@ broker-ai/
 - [Fase 2-checklist](docs/phase-2-checklist.md)
 - [Fase 3-checklist](docs/phase-3-checklist.md)
 - [Fase 4-checklist](docs/phase-4-checklist.md)
+- [Fase 5-checklist](docs/phase-5-checklist.md)
 - [Beslissing: simulation-first](docs/decisions/0001-simulation-first.md)
 - [Beslissing: scope van Fase 1](docs/decisions/0002-phase-1-domain-boundaries.md)
 - [Beslissing: tijdsvolgorde van backtests](docs/decisions/0003-next-open-backtesting.md)
 - [Beslissing: verplichte risicopoort](docs/decisions/0004-mandatory-risk-gateway.md)
 - [Beslissing: asynchroon brokercontract](docs/decisions/0005-async-broker-contract.md)
+- [Beslissing: gespecialiseerde bots en goedkeuring](docs/decisions/0006-bot-approval-modes.md)
 - [Begrippenlijst](docs/learning-notes/glossary.md)
 - [Changelog](CHANGELOG.md)
 

@@ -36,7 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "command",
         nargs="?",
-        choices=("demo", "backtest", "risk-demo", "broker-demo"),
+        choices=("demo", "backtest", "risk-demo", "broker-demo", "serve"),
         help="Kies een volledig lokale Broker AI-demo.",
     )
     return parser
@@ -67,6 +67,12 @@ def main(argv: Sequence[str] | None = None) -> None:
     elif arguments.command == "broker-demo":
         print()
         print(run_broker_demo())
+    elif arguments.command == "serve":
+        import uvicorn
+
+        from broker_ai.server import create_app
+
+        uvicorn.run(create_app(), host="127.0.0.1", port=8000)
 
 
 if __name__ == "__main__":

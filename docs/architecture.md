@@ -52,6 +52,7 @@ Transactiekosten en slippage maken de simulatie minder optimistisch.
 - `config`: veilige, gevalideerde instellingen.
 - `observability`: uniforme diagnostische informatie.
 - `main`: dun startpunt dat invoer naar de juiste use-case leidt.
+- `server`: lokale REST API, authenticatie, SQLite-opslag en clientcontracten.
 
 ## Verplichte pre-tradecontrole
 
@@ -96,6 +97,25 @@ De iOS/SwiftUI-app wordt later een client van een beveiligde server-API. Zij kri
 geen brokergeheimen en voert geen kernlogica lokaal uit. Iedere order blijft op de
 server authenticatie, validatie, risicocontrole en auditlogging doorlopen.
 
+## Lokale server en gespecialiseerde bots
+
+FastAPI biedt `/api/v1` als stabiel contract en genereert OpenAPI-documentatie. SQLite
+is lokaal de bron van waarheid; geldbedragen worden als decimale tekst opgeslagen om
+float-afwijkingen te vermijden. Iedere bot heeft een specialisatie en goedkeuringsmodus:
+
+- `manual`: ieder voorstel wacht op menselijke goedkeuring;
+- `automatic_limited`: alleen voorstellen onder de botlimiet worden automatisch gemarkeerd;
+- `disabled`: ieder voorstel wordt geweigerd.
+
+`auto_approved` betekent nog geen brokeruitvoering. In een volgende integratiestap moet
+ook zo'n voorstel door de centrale risk engine en brokeradapter.
+
+```text
+Web/mobile client → Bearer auth → /api/v1 → SQLite
+                                      ↓
+                         bot → order proposal → auditlog
+```
+
 ## Domeinmodellen na Fase 1
 
 - `Instrument`: identiteit, beurs, valuta en instrumenttype.
@@ -112,9 +132,8 @@ De simulator valideert order, valuta, saldo/positie en auditmetadata voordat hij
 portefeuille wijzigt. Een geweigerde order levert geen cashmutatie, positiewijziging of
 transactie op. Een geslaagde order levert precies één `Transaction` op.
 
-## Grenzen na Fase 4
+## Grenzen na Fase 5
 
-Geen database, externe dataleverancier, netwerkverkeer, AI, externe paper broker of
-live broker. De lokale paper-adapter bewaart alles tijdelijk in het geheugen. Een echte
-paper-adapter wordt pas gekozen nadat broker, landondersteuning en API-voorwaarden zijn
-beoordeeld.
+Geen externe dataleverancier, AI, externe paper broker of live broker. De API bindt
+lokaal aan `127.0.0.1`; SQLite is niet bedoeld voor meerdere productieservers. Externe
+deployment volgt later met PostgreSQL, HTTPS, rotatie van secrets en beheerde back-ups.

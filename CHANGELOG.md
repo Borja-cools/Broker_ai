@@ -2,6 +2,16 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.6.0 — Fase 5
+
+- Lokale FastAPI REST API onder `/api/v1` met OpenAPI-documentatie.
+- SQLite-schema en migratie voor gebruikers, bots, snapshots, analyses en voorstellen.
+- Bearer-authenticatie, admin/viewer-autorisatie en rate limiting van inlogpogingen.
+- Botmodi voor handmatige, beperkt automatische of uitgeschakelde goedkeuring.
+- Gevalideerde ordervoorstellen, beslissingen en persistent auditlog.
+- Health check, metrics, request-ID's en gestructureerde HTTP-logging.
+- Geteste SQLite-back-ups en containerconfiguratie voor latere deployment.
+
 ## 0.5.0 — Fase 4
 
 - Stabiel asynchroon `BrokerInterface` voor marktdata, account en orderlevenscyclus.

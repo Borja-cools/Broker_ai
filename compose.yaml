@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      BROKER_AI_MODE: simulation
+      BROKER_AI_DATABASE_PATH: /app/data/broker_ai.db
+      BROKER_AI_API_TOKEN: ${BROKER_AI_API_TOKEN:?set BROKER_AI_API_TOKEN in .env}
+    volumes:
+      - broker_ai_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  broker_ai_data:

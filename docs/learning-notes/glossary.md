@@ -44,3 +44,9 @@
 - **Retry:** een tijdelijke fout een begrensd aantal keer opnieuw proberen.
 - **Time-out:** stoppen wanneer een extern antwoord te lang uitblijft.
 - **Reconciliatie:** lokale orderstatus vergelijken en bijwerken vanuit de brokerstatus.
+- **REST API:** HTTP-ingangen waarmee clients gegevens lezen of acties aanvragen.
+- **OpenAPI:** machineleesbare beschrijving waaruit interactieve API-documentatie volgt.
+- **Migratie:** gecontroleerde wijziging van een databaseschema met een versienummer.
+- **Bearer-token:** geheim dat een client in de Authorization-header meestuurt.
+- **Rate limiting:** maximumaantal verzoeken binnen een tijdvenster.
+- **Traceerbaarheid:** een actie via request-ID, gebruiker en auditlog kunnen reconstrueren.
