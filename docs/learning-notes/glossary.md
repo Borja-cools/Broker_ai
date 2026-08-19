@@ -7,6 +7,8 @@
 - **Domain model:** weergave van begrippen en regels uit het probleemdomein.
 - **Enum:** beperkte, benoemde lijst van toegestane waarden.
 - **Execution:** vastlegging van een uitgevoerde order.
+- **Auditlog:** chronologische, achteraf controleerbare lijst van gebeurtenissen.
+- **Atomaire handeling:** slaagt volledig of verandert helemaal niets.
 - **Git:** lokaal versiebeheersysteem voor wijzigingen en geschiedenis.
 - **GitHub:** online dienst voor Git-repositories en samenwerking.
 - **Interpreter:** programma dat Python-code uitvoert.
@@ -14,6 +16,12 @@
 - **Module:** Python-bestand met samenhangende code.
 - **Package:** map met samenhangende Python-modules.
 - **Position:** aantal aangehouden eenheden en hun gemiddelde kostprijs.
+- **MarketPrice:** koers van één instrument op een expliciet tijdstip.
+- **Gerealiseerde winst:** definitief resultaat van verkochte eenheden.
+- **Ongerealiseerde winst:** koersafhankelijk resultaat van aangehouden eenheden.
+- **Kostbasis:** oorspronkelijke aanschafwaarde inclusief toegerekende kosten.
+- **Portefeuillewaarde (equity):** cash plus actuele marktwaarde van posities.
+- **UUID:** praktisch unieke identificatiecode voor orders en transacties.
 - **Repository:** projectmap met Git-geschiedenis.
 - **Test:** automatische controle van verwacht gedrag.
 - **Virtual environment:** geïsoleerde Python-omgeving voor één project.

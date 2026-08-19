@@ -73,7 +73,22 @@ class OrderTest(unittest.TestCase):
         with self.assertRaises(FrozenInstanceError):
             order.quantity = 3  # type: ignore[misc]
 
+    def test_each_order_gets_a_unique_id(self) -> None:
+        first = Order(
+            instrument=self.asml,
+            side=OrderSide.BUY,
+            quantity=1,
+            price=Decimal("625.50"),
+        )
+        second = Order(
+            instrument=self.asml,
+            side=OrderSide.BUY,
+            quantity=1,
+            price=Decimal("625.50"),
+        )
+
+        self.assertNotEqual(first.order_id, second.order_id)
+
 
 if __name__ == "__main__":
     unittest.main()
-

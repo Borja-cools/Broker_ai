@@ -31,6 +31,21 @@ class Instrument:
     def __post_init__(self) -> None:
         """Normaliseer en valideer de ingevoerde instrumentgegevens."""
 
+        if not isinstance(self.symbol, str):
+            raise TypeError("Symbool moet tekst zijn.")
+
+        if not isinstance(self.name, str):
+            raise TypeError("Naam moet tekst zijn.")
+
+        if not isinstance(self.exchange, Exchange):
+            raise TypeError("Beurs moet een Exchange zijn.")
+
+        if not isinstance(self.currency, Currency):
+            raise TypeError("Valuta moet een Currency zijn.")
+
+        if not isinstance(self.asset_type, AssetType):
+            raise TypeError("Instrumenttype moet een AssetType zijn.")
+
         normalized_symbol = self.symbol.strip().upper()
         normalized_name = self.name.strip()
 
@@ -45,4 +60,3 @@ class Instrument:
 
         object.__setattr__(self, "symbol", normalized_symbol)
         object.__setattr__(self, "name", normalized_name)
-

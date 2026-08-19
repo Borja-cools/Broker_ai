@@ -24,7 +24,10 @@ class DemoTest(unittest.TestCase):
         self.assertIn("Resterende cash: €3898.00", report)
         self.assertIn("Gerealiseerde winst: €98.67", report)
         self.assertIn("Ongerealiseerde winst: €99.33", report)
+        self.assertIn("Totale portefeuillewaarde: €5198.00", report)
+        self.assertIn("Totaal resultaat: €198.00", report)
         self.assertIn("Totale transactiekosten: €2.00", report)
+        self.assertIn("Transacties in auditlog: 2", report)
         self.assertIn("Status: FILLED", report)
 
 

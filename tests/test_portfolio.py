@@ -40,7 +40,22 @@ class PortfolioTest(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "Decimal"):
             self.portfolio.deposit(10.50)  # type: ignore[arg-type]
 
+    def test_negative_sale_quantity_is_rejected(self) -> None:
+        from broker_ai.domain import Currency, Exchange, Instrument
+
+        instrument = Instrument(
+            symbol="ASML",
+            name="ASML Holding",
+            exchange=Exchange.EURONEXT_AMSTERDAM,
+            currency=Currency.EUR,
+        )
+        self.portfolio.record_purchase(instrument, 2, Decimal("600.00"))
+
+        with self.assertRaisesRegex(ValueError, "groter zijn dan nul"):
+            self.portfolio.record_sale(instrument, -1, Decimal("650.00"))
+
+        self.assertEqual(self.portfolio.get_position("ASML").quantity, 2)  # type: ignore[union-attr]
+
 
 if __name__ == "__main__":
     unittest.main()
-

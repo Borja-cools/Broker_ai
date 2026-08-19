@@ -7,13 +7,15 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 > **Veiligheidsstatus:** alleen `simulation` is toegestaan. AI, paper trading en live
 > trading maken geen deel uit van Fase 0.
 
-## Wat werkt al?
+## Wat werkt al? (Fase 1)
 
 - Gevalideerde configuratie met veilige standaardwaarden.
 - Cashportefeuille en posities met `Decimal`-berekeningen.
 - Koop- en verkooporders voor gehele aandelen.
 - Lokale simulated broker met configureerbare transactiekosten.
 - Gerealiseerde en ongerealiseerde winstberekening.
+- Tijdzonebewuste marktprijzen en volledige portefeuillewaardering.
+- Unieke order- en transactie-ID's met een onveranderlijk auditlog.
 - Expliciet terminaldemoscenario en automatische tests.
 - Centrale logging en documentatie van architectuurkeuzes.
 
@@ -100,8 +102,11 @@ broker-ai/
 
 - [Architectuur](docs/architecture.md)
 - [Fase 0-checklist](docs/phase-0-checklist.md)
+- [Fase 1-checklist](docs/phase-1-checklist.md)
 - [Beslissing: simulation-first](docs/decisions/0001-simulation-first.md)
+- [Beslissing: scope van Fase 1](docs/decisions/0002-phase-1-domain-boundaries.md)
 - [Begrippenlijst](docs/learning-notes/glossary.md)
+- [Changelog](CHANGELOG.md)
 
 ## Disclaimer
 
