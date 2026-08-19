@@ -32,3 +32,9 @@
 - **Drawdown:** procentuele daling vanaf een eerdere hoogste portefeuillewaarde.
 - **Survivorship bias:** vertekening doordat verdwenen beleggingen uit data ontbreken.
 - **Overfitting:** een strategie zo afstemmen dat zij historische ruis leert.
+- **Risk policy:** centrale verzameling limieten die iedere strategie moet respecteren.
+- **Pre-trade check:** risicocontrole voordat een order een broker kan bereiken.
+- **Concentratie:** aandeel van één positie in de totale portefeuillewaarde.
+- **Cashreserve:** geld dat na een aankoop beschikbaar moet blijven.
+- **Kill switch:** noodstop die alle nieuwe orderuitvoering blokkeert.
+- **Fail-safe:** bij een onbekende of technische fout veilig stoppen in plaats van doorgaan.

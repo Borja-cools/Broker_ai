@@ -13,6 +13,7 @@ from broker_ai.domain import (
     OrderSide,
     Portfolio,
 )
+from broker_ai.risk import RiskContext, RiskEngine, RiskManagedBroker, RiskPolicy
 
 
 def format_euro(amount: Decimal) -> str:
@@ -48,8 +49,30 @@ def run_demo() -> str:
     valuation_time = datetime(2026, 8, 19, 16, 0, tzinfo=timezone.utc)
 
     broker = SimulatedBroker(fee_per_order=Decimal("1.00"))
-    buy_execution = broker.execute(buy_order, portfolio)
-    sell_execution = broker.execute(sell_order, portfolio)
+    risk_engine = RiskEngine(RiskPolicy(max_concentration=Decimal("0.50")))
+    safe_broker = RiskManagedBroker(broker, risk_engine)
+    buy_execution = safe_broker.execute(
+        buy_order,
+        portfolio,
+        RiskContext(
+            portfolio,
+            Decimal("5000.00"),
+            Decimal("5000.00"),
+            {"ASML": buy_order.price},
+            broker.fee_per_order,
+        ),
+    )
+    sell_execution = safe_broker.execute(
+        sell_order,
+        portfolio,
+        RiskContext(
+            portfolio,
+            portfolio.cash_balance + Decimal("3") * sell_order.price,
+            Decimal("5000.00"),
+            {"ASML": sell_order.price},
+            broker.fee_per_order,
+        ),
+    )
     position = portfolio.get_position("ASML")
 
     if position is None:
@@ -77,5 +100,6 @@ def run_demo() -> str:
         f"Totaal resultaat: {format_euro(valuation.total_profit)}\n"
         f"Totale transactiekosten: {format_euro(buy_execution.fee + sell_execution.fee)}\n"
         f"Transacties in auditlog: {len(broker.transactions)}\n"
+        f"Risicocontroles in auditlog: {len(risk_engine.audit_log)}\n"
         f"Status: {sell_execution.status.value.upper()}"
     )

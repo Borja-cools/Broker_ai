@@ -49,7 +49,9 @@ class BacktestingTest(unittest.TestCase):
         transaction = result.executions[0].transaction
         self.assertEqual(transaction.executed_at.date(), date(2025, 1, 2))
         self.assertEqual(transaction.price, Decimal("22.0"))
-        self.assertEqual(transaction.quantity, 4)
+        self.assertEqual(transaction.quantity, 1)
+        self.assertEqual(len(result.risk_assessments), 1)
+        self.assertTrue(result.risk_assessments[0].approved)
 
     def test_result_is_reproducible(self) -> None:
         first = BacktestEngine().run(self.dataset, BuyOnceStrategy(), self.config)

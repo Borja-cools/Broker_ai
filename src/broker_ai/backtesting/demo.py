@@ -59,6 +59,7 @@ def format_backtest_report(result: BacktestResult) -> str:
             f"Volatiliteit op jaarbasis: {_percentage(result.metrics.annualized_volatility)}",
             f"Sharpe-achtige maatstaf: {sharpe}",
             f"Uitgevoerde orders: {len(result.executions)}",
+            f"Risicocontroles: {len(result.risk_assessments)} goedgekeurd",
             "Veiligheid: geen netwerk, broker of echt geld gebruikt",
         )
     )

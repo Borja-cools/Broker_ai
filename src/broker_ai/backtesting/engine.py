@@ -1,14 +1,22 @@
 """Een kleine event-driven backtest-engine met expliciete tijdsvolgorde."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, time, timezone
 from decimal import Decimal, ROUND_DOWN
 from math import sqrt
+from itertools import count
 from uuid import NAMESPACE_URL, uuid5
 
 from broker_ai.brokers import Execution, SimulatedBroker
 from broker_ai.data import HistoricalDataset
 from broker_ai.domain import MarketPrice, Order, OrderSide, Portfolio
+from broker_ai.risk import (
+    RiskAssessment,
+    RiskContext,
+    RiskEngine,
+    RiskManagedBroker,
+    RiskPolicy,
+)
 from broker_ai.strategies import Signal, Strategy
 
 
@@ -19,6 +27,7 @@ class BacktestConfig:
     initial_cash: Decimal = Decimal("10000.00")
     fee_per_order: Decimal = Decimal("1.00")
     slippage_rate: Decimal = Decimal("0.001")
+    risk_policy: RiskPolicy = field(default_factory=RiskPolicy)
 
     def __post_init__(self) -> None:
         _positive_decimal(self.initial_cash, "Beginkapitaal")
@@ -26,6 +35,8 @@ class BacktestConfig:
         _non_negative_decimal(self.slippage_rate, "Slippage")
         if self.slippage_rate >= Decimal("1"):
             raise ValueError("Slippage moet kleiner zijn dan 100%.")
+        if not isinstance(self.risk_policy, RiskPolicy):
+            raise TypeError("Risicobeleid moet een RiskPolicy zijn.")
 
 
 @dataclass(frozen=True)
@@ -54,6 +65,7 @@ class BacktestResult:
     config: BacktestConfig
     equity_curve: tuple[EquityPoint, ...]
     executions: tuple[Execution, ...]
+    risk_assessments: tuple[RiskAssessment, ...]
     metrics: PerformanceMetrics
     benchmark_metrics: PerformanceMetrics
     final_cash: Decimal
@@ -74,9 +86,20 @@ class BacktestEngine:
         executions: list[Execution] = []
         equity_curve: list[EquityPoint] = []
         pending_signal = Signal.HOLD
+        assessment_numbers = count(1)
+        risk_date = [dataset.bars[0].trading_date]
+        risk_engine = RiskEngine(
+            settings.risk_policy,
+            clock=lambda: datetime.combine(risk_date[0], time(8, 59), timezone.utc),
+            assessment_id_factory=lambda: uuid5(
+                NAMESPACE_URL,
+                f"broker-ai:risk:{dataset.instrument.symbol}:{next(assessment_numbers)}",
+            ),
+        )
 
         for index, bar in enumerate(dataset.bars):
             if pending_signal is not Signal.HOLD:
+                risk_date[0] = bar.trading_date
                 execution = self._execute_signal(
                     pending_signal,
                     bar.open,
@@ -84,6 +107,7 @@ class BacktestEngine:
                     portfolio,
                     settings,
                     bar.trading_date,
+                    risk_engine,
                 )
                 if execution is not None:
                     executions.append(execution)
@@ -114,6 +138,7 @@ class BacktestEngine:
             config=settings,
             equity_curve=tuple(equity_curve),
             executions=tuple(executions),
+            risk_assessments=risk_engine.audit_log,
             metrics=calculate_metrics(tuple(equity_curve), settings.initial_cash),
             benchmark_metrics=calculate_metrics(benchmark_curve, settings.initial_cash),
             final_cash=portfolio.cash_balance,
@@ -132,11 +157,21 @@ class BacktestEngine:
         portfolio: Portfolio,
         config: BacktestConfig,
         trading_date: date,
+        risk_engine: RiskEngine,
     ) -> Execution | None:
         if signal is Signal.BUY:
             fill_price = opening_price * (Decimal("1") + config.slippage_rate)
-            spendable = portfolio.cash_balance - config.fee_per_order
-            quantity = int((spendable / fill_price).to_integral_value(rounding=ROUND_DOWN))
+            position = portfolio.get_position(dataset.instrument.symbol)
+            current_position_value = (position.quantity if position else 0) * opening_price
+            current_equity = portfolio.cash_balance + current_position_value
+            reserve = current_equity * config.risk_policy.min_cash_reserve
+            allowed_value = min(
+                config.risk_policy.max_order_value,
+                config.risk_policy.max_position_value - current_position_value,
+                current_equity * config.risk_policy.max_concentration - current_position_value,
+                portfolio.cash_balance - config.fee_per_order - reserve,
+            )
+            quantity = int((allowed_value / fill_price).to_integral_value(rounding=ROUND_DOWN))
             if quantity <= 0:
                 return None
             side = OrderSide.BUY
@@ -158,20 +193,32 @@ class BacktestEngine:
                 f"broker-ai:transaction:{dataset.instrument.symbol}:{trading_date}:{side.value}",
             ),
         )
-        execution = dated_broker.execute(
-            Order(
-                dataset.instrument,
-                side,
-                quantity,
-                fill_price,
-                order_id=uuid5(
-                    NAMESPACE_URL,
-                    f"broker-ai:order:{dataset.instrument.symbol}:{trading_date}:{side.value}",
-                ),
+        order = Order(
+            dataset.instrument,
+            side,
+            quantity,
+            fill_price,
+            order_id=uuid5(
+                NAMESPACE_URL,
+                f"broker-ai:order:{dataset.instrument.symbol}:{trading_date}:{side.value}",
             ),
-            portfolio,
         )
-        return execution
+        position = portfolio.get_position(dataset.instrument.symbol)
+        current_equity = portfolio.cash_balance + (
+            position.quantity * opening_price if position else Decimal("0")
+        )
+        context = RiskContext(
+            portfolio=portfolio,
+            current_equity=current_equity,
+            day_start_equity=current_equity,
+            market_prices={dataset.instrument.symbol: opening_price},
+            fee=config.fee_per_order,
+        )
+        return RiskManagedBroker(dated_broker, risk_engine).execute(
+            order,
+            portfolio,
+            context,
+        )
 
 
 def calculate_metrics(

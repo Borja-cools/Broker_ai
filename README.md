@@ -7,7 +7,7 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 > **Veiligheidsstatus:** alleen lokale simulatie is toegestaan. AI, paper trading en
 > live trading zijn nog niet aangesloten.
 
-## Wat werkt al? (Fase 2)
+## Wat werkt al? (Fase 3)
 
 - Gevalideerde configuratie met veilige standaardwaarden.
 - Cashportefeuille en posities met `Decimal`-berekeningen.
@@ -23,6 +23,11 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 - Reproduceerbare backtest met uitvoering op de volgende handelsdag.
 - Transactiekosten, slippage en buy-and-holdbenchmark.
 - Rendement, volatiliteit, maximale drawdown en Sharpe-achtige maatstaf.
+- Centrale risk engine die strategie en broker van elkaar scheidt.
+- Limieten voor orderwaarde, positiewaarde, concentratie, cashreserve en dagverlies.
+- Fail-safe kill switch en veilige afwijzing wanneer een risicoregel faalt.
+- Uitlegbare afwijzingsredenen en onveranderlijk auditlog van iedere controle.
+- Verplichte risicopoort in de transactie- en backtestdemo.
 
 ## Vereisten
 
@@ -66,6 +71,12 @@ Voer de vaste historische backtestdemo uit:
 broker-ai backtest
 ```
 
+Bekijk goedkeuring, afwijzing en de kill switch:
+
+```bash
+broker-ai risk-demo
+```
+
 Toon beschikbare opties:
 
 ```bash
@@ -106,6 +117,7 @@ broker-ai/
 │   ├── data/                historische OHLCV-import en validatie
 │   ├── domain/              instrumenten, orders en portefeuille
 │   ├── observability/       logging; later metrics en alerts
+│   ├── risk/                beleid, regels, auditlog en verplichte brokerpoort
 │   ├── simulation/          expliciete, lokale scenario's
 │   └── strategies/          strategiecontract en referentiestrategieën
 ├── tests/                   automatische veiligheidstests
@@ -118,9 +130,11 @@ broker-ai/
 - [Fase 0-checklist](docs/phase-0-checklist.md)
 - [Fase 1-checklist](docs/phase-1-checklist.md)
 - [Fase 2-checklist](docs/phase-2-checklist.md)
+- [Fase 3-checklist](docs/phase-3-checklist.md)
 - [Beslissing: simulation-first](docs/decisions/0001-simulation-first.md)
 - [Beslissing: scope van Fase 1](docs/decisions/0002-phase-1-domain-boundaries.md)
 - [Beslissing: tijdsvolgorde van backtests](docs/decisions/0003-next-open-backtesting.md)
+- [Beslissing: verplichte risicopoort](docs/decisions/0004-mandatory-risk-gateway.md)
 - [Begrippenlijst](docs/learning-notes/glossary.md)
 - [Changelog](CHANGELOG.md)
 

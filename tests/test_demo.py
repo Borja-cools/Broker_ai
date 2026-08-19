@@ -28,6 +28,7 @@ class DemoTest(unittest.TestCase):
         self.assertIn("Totaal resultaat: €198.00", report)
         self.assertIn("Totale transactiekosten: €2.00", report)
         self.assertIn("Transacties in auditlog: 2", report)
+        self.assertIn("Risicocontroles in auditlog: 2", report)
         self.assertIn("Status: FILLED", report)
 
 

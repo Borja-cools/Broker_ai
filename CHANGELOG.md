@@ -2,6 +2,16 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.4.0 — Fase 3
+
+- Onafhankelijke risk engine vóór iedere order in applicatie- en backteststromen.
+- Centrale limieten voor order, positie, concentratie, cashreserve en dagverlies.
+- Fail-safe kill switch en veilige afwijzing van defecte risicoregels.
+- Uitlegbare risicocodes, afwijzingsredenen en volledig auditlog.
+- Validatie dat opgegeven equity overeenkomt met cash en alle actuele posities.
+- Risicobeperkte ordergrootte in backtests en aparte `risk-demo`.
+- Scenario-, grens-, stress- en regressietests voor de volledige risicopoort.
+
 ## 0.3.0 — Fase 2
 
 - Lokale CSV-import en validatie van historische OHLCV-data.

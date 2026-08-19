@@ -15,10 +15,14 @@ Configuratievalidatie
       ↓
 Expliciet demoscenario
       ↓
-Order → SimulatedBroker → Portfolio + Transaction
+Order → RiskManagedBroker → SimulatedBroker → Portfolio + Transaction
       ↓
 MarketPrice → PortfolioValuation → terminalrapport
 ```
+
+Vanaf Fase 3 lopen applicatieorders via `RiskManagedBroker`. `SimulatedBroker` blijft
+een lage-level adapter die afzonderlijk getest wordt, maar wordt niet rechtstreeks door
+de demo- of backteststroom aangeroepen.
 
 ## Historische backtest
 
@@ -27,7 +31,7 @@ Lokaal CSV-bestand → HistoricalDataset → gevalideerde OHLCV-bars
                                              ↓
 Afgesloten bars → Strategy → signaal → volgende openingskoers
                                              ↓
-                          SimulatedBroker → Portfolio
+                   RiskManagedBroker → SimulatedBroker → Portfolio
                                              ↓
                     Equity curve → metrics + benchmark → rapport
 ```
@@ -44,9 +48,26 @@ Transactiekosten en slippage maken de simulatie minder optimistisch.
 - `data`: historische koersmodellen en lokale CSV-import.
 - `strategies`: zuivere beslislogica zonder toegang tot geld of broker.
 - `backtesting`: tijdsvolgorde, orderuitvoering, equity curve en statistieken.
+- `risk`: centraal beleid, samenstelbare regels, auditlog en verplichte brokerpoort.
 - `config`: veilige, gevalideerde instellingen.
 - `observability`: uniforme diagnostische informatie.
 - `main`: dun startpunt dat invoer naar de juiste use-case leidt.
+
+## Verplichte pre-tradecontrole
+
+```text
+Strategie of applicatie
+        ↓ order + actuele context
+RiskManagedBroker
+        ↓
+RiskEngine → alle regels → RiskAssessment → auditlog
+        ↓ alleen bij volledige goedkeuring
+SimulatedBroker → Portfolio + Transaction
+```
+
+Een technische fout in één regel wordt als afwijzing opgeslagen. De kill switch
+blokkeert iedere order. Normale blootstellingslimieten blokkeren nieuwe kooprisico's,
+maar laten verkopen toe zodat een positie bij verlies kan worden afgebouwd.
 
 ## Toekomstige mobiele app
 
@@ -70,8 +91,8 @@ De simulator valideert order, valuta, saldo/positie en auditmetadata voordat hij
 portefeuille wijzigt. Een geweigerde order levert geen cashmutatie, positiewijziging of
 transactie op. Een geslaagde order levert precies één `Transaction` op.
 
-## Grenzen na Fase 2
+## Grenzen na Fase 3
 
-Geen database, externe dataleverancier, netwerkverkeer, risk engine, AI, paper broker
+Geen database, externe dataleverancier, netwerkverkeer, AI, paper broker
 of live broker. De huidige engine gebruikt één instrument en gehele aandelen. Data en
 resultaten leven tijdelijk in het geheugen.
