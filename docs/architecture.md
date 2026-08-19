@@ -156,6 +156,11 @@ geslaagde run atomair vervangen. Iedere run en voltooiing worden afzonderlijk be
 Alpaca Paper → alpaca-sync → SQLite → lokale REST API → later web/iOS-dashboard
 ```
 
+De server kan dezelfde synchronisatie optioneel in een achtergrondtaak uitvoeren. Deze
+staat standaard uit, heeft een minimuminterval, slaat een overlappende run over en houdt
+laatste succes, fout en aantal opeenvolgende fouten in geheugen bij. Een synchronisatie
+kan nooit een order creëren; orderindiening blijft een afzonderlijke risicogestuurde flow.
+
 ## Grenzen na versie 0.7
 
 Nog geen echte Alpaca-credentials, AI of live broker. Fractionele aandelen en crypto

@@ -150,6 +150,12 @@ class ServerApiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()[0]["environment"], "paper")
 
+    def test_automatic_sync_is_disabled_by_default(self) -> None:
+        response = self.client.get("/api/v1/broker-sync-status", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["enabled"])
+        self.assertTrue(response.json()["paper_only"])
+
     def test_database_backup_contains_persisted_bot(self) -> None:
         self.create_bot("manual")
         backup_path = Path(self.temporary.name) / "backups" / "copy.db"

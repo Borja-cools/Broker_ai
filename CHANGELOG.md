@@ -2,6 +2,15 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.8.0 — Automatische Paper-monitoring
+
+- Optionele achtergrondwerker voor periodieke Alpaca Paper-synchronisatie.
+- Veilige standaard: automatisch synchroniseren staat uit.
+- Minimuminterval van 60 seconden en geen overlappende runs.
+- Fouten stoppen de server niet en worden als status zichtbaar gemaakt.
+- Netjes stoppen van de achtergrondtaak bij afsluiten van de server.
+- Beveiligd endpoint `/api/v1/broker-sync-status` voor monitoring.
+
 ## 0.7.2 — Swagger Bearer-login
 
 - Officiële HTTP Bearer-securitydefinitie aan OpenAPI toegevoegd.

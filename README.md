@@ -130,6 +130,19 @@ De gegevens zijn na een herstart van de lokale server zichtbaar via `/docs` onde
 `broker-orders`, `broker-positions` en `broker-sync-runs`. Herhaald synchroniseren werkt
 dezelfde order bij en maakt geen duplicaat.
 
+Automatische paper-synchronisatie kan bewust worden aangezet in dezelfde terminal
+waarin de server wordt gestart:
+
+```bash
+export BROKER_AI_ALPACA_SYNC_ENABLED=true
+export BROKER_AI_ALPACA_SYNC_INTERVAL_SECONDS=300
+broker-ai serve
+```
+
+Daarvoor moeten ook de Alpaca Paper-sleutels in die terminal aanwezig zijn. De standaard
+is `false`; de werker leest en synchroniseert alleen en plaatst nooit een nieuwe order.
+De actuele toestand is zichtbaar via `GET /api/v1/broker-sync-status`.
+
 Start de lokale API nadat je een geheim van minimaal 32 tekens hebt ingesteld:
 
 ```bash

@@ -22,7 +22,9 @@
 - [x] Idempotente orders, posities en sync-runs naar SQLite synchroniseren.
 - [ ] Gesynchroniseerde order met Broker AI-API en auditlog vergelijken.
 - [ ] Annulering, gedeeltelijke uitvoering en markt-sluiting observeren.
-- [ ] Dagelijkse reconciliatie en waarschuwingen activeren.
+- [x] Begrensde automatische reconciliatiewerker en statusmonitor bouwen.
+- [ ] Automatische reconciliatie lokaal activeren en gedurende meerdere runs observeren.
+- [ ] Waarschuwingen voor herhaalde synchronisatiefouten toevoegen.
 - [ ] Minimaal meerdere weken zonder echt geld evalueren.
 
 ## Bewust nog niet toegestaan

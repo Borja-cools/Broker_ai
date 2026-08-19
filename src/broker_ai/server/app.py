@@ -20,6 +20,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from broker_ai import __version__
 from broker_ai.server.database import Database
 from broker_ai.server.schemas import ApprovalMode, BotCreate, DecisionCreate, ProposalCreate
+from broker_ai.server.sync_worker import BrokerSyncWorker
 
 
 LOGGER = logging.getLogger(__name__)
@@ -46,6 +47,8 @@ def create_app(
     api_token: str | None = None,
     *,
     rate_limit: int = 60,
+    sync_enabled: bool | None = None,
+    sync_interval_seconds: int | None = None,
 ) -> FastAPI:
     token = api_token or os.getenv("BROKER_AI_API_TOKEN")
     if not token or len(token) < 32:
@@ -54,12 +57,31 @@ def create_app(
     limiter = RateLimiter(rate_limit)
     bearer_scheme = HTTPBearer(auto_error=False)
     counters = {"requests": 0, "errors": 0}
+    automatic_sync = (
+        _environment_bool("BROKER_AI_ALPACA_SYNC_ENABLED", False)
+        if sync_enabled is None else sync_enabled
+    )
+    interval = sync_interval_seconds or int(
+        os.getenv("BROKER_AI_ALPACA_SYNC_INTERVAL_SECONDS", "300")
+    )
+
+    async def sync_operation() -> dict[str, object]:
+        from broker_ai.brokers.alpaca_sync import sync_alpaca_paper
+
+        return await sync_alpaca_paper(database=database)
+
+    sync_worker = BrokerSyncWorker(sync_operation, interval)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         database.migrate()
         app.state.admin = database.seed_admin(token)
-        yield
+        if automatic_sync:
+            sync_worker.start()
+        try:
+            yield
+        finally:
+            await sync_worker.stop()
 
     app = FastAPI(
         title="Broker AI API",
@@ -68,6 +90,7 @@ def create_app(
         lifespan=lifespan,
     )
     app.state.database = database
+    app.state.sync_worker = sync_worker
 
     @app.middleware("http")
     async def observe(request: Request, call_next):
@@ -227,4 +250,20 @@ def create_app(
             "SELECT * FROM broker_sync_runs ORDER BY completed_at DESC LIMIT 100"
         )
 
+    @app.get("/api/v1/broker-sync-status", tags=["broker"])
+    def broker_sync_status(user: dict = Depends(current_user)) -> dict:
+        return sync_worker.status(enabled=automatic_sync)
+
     return app
+
+
+def _environment_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    normalized = raw.strip().lower()
+    if normalized in {"true", "1", "yes", "on"}:
+        return True
+    if normalized in {"false", "0", "no", "off"}:
+        return False
+    raise RuntimeError(f"{name} moet true of false zijn, niet {raw!r}.")
