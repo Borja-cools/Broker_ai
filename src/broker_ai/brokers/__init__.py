@@ -12,6 +12,7 @@ from broker_ai.brokers.interface import (
     BrokerUnavailableError,
 )
 from broker_ai.brokers.local import LocalPaperBrokerAdapter, SimulatorBrokerAdapter
+from broker_ai.brokers.alpaca import AlpacaPaperBrokerAdapter
 from broker_ai.brokers.models import (
     AccountSnapshot,
     BrokerMode,
@@ -25,6 +26,7 @@ from broker_ai.brokers.reliable import ReliabilityPolicy, ReliableBrokerClient
 
 __all__ = [
     "AccountSnapshot",
+    "AlpacaPaperBrokerAdapter",
     "BrokerError",
     "BrokerInterface",
     "BrokerIdempotencyConflictError",

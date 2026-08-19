@@ -2,6 +2,15 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.7.0 — Alpaca Paper-fundament
+
+- Strikt paper-only Alpaca-adapter achter het bestaande `BrokerInterface`.
+- USD, NASDAQ, NYSE en NYSE Arca toegevoegd zonder bestaande EUR-stromen te breken.
+- Account-, positie-, IEX-marktdata-, order-, annulering- en reconciliatievertaling.
+- Idempotente orderindiening en expliciete broker- en netwerkfouten.
+- Alleen-lezen `broker-ai alpaca-check` voor een toekomstige accountkoppeling.
+- Contracttests met een volledig nagebootste Alpaca API; geen echte sleutels vereist.
+
 ## 0.6.0 — Fase 5
 
 - Lokale FastAPI REST API onder `/api/v1` met OpenAPI-documentatie.

@@ -52,8 +52,8 @@ class Order:
         if self.price <= Decimal("0"):
             raise ValueError("Prijs moet groter zijn dan nul.")
 
-        if self.instrument.currency.value != "EUR":
-            raise ValueError("Alleen EUR-orders worden momenteel ondersteund.")
+        if self.instrument.currency.value not in {"EUR", "USD"}:
+            raise ValueError("Alleen EUR- en USD-orders worden momenteel ondersteund.")
 
     @property
     def total_value(self) -> Decimal:

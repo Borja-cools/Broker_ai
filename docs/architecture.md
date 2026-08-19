@@ -74,7 +74,7 @@ maar laten verkopen toe zodat een positie bij verlies kan worden afgebouwd.
 
 `BrokerInterface` is asynchroon en bevat marktdata, accountinformatie, verbindingsstatus,
 indienen, opvragen, annuleren en reconciliëren. Zowel `SimulatorBrokerAdapter` als
-`LocalPaperBrokerAdapter` volgen ditzelfde contract. De paper-adapter geeft een order
+`LocalPaperBrokerAdapter` en `AlpacaPaperBrokerAdapter` volgen ditzelfde contract. De lokale paper-adapter geeft een order
 eerst `submitted` en verwerkt hem pas tijdens reconciliatie.
 
 ```text
@@ -84,7 +84,7 @@ ReliableBrokerClient  → time-out + begrensde retry
           ↓
 BrokerInterface
       ┌───┴────────────────┐
-SimulatorAdapter    LocalPaperAdapter
+SimulatorAdapter    LocalPaperAdapter    AlpacaPaperAdapter
 ```
 
 De interne order-ID is de idempotency-sleutel. Herhaling met identieke inhoud geeft
@@ -132,8 +132,24 @@ De simulator valideert order, valuta, saldo/positie en auditmetadata voordat hij
 portefeuille wijzigt. Een geweigerde order levert geen cashmutatie, positiewijziging of
 transactie op. Een geslaagde order levert precies één `Transaction` op.
 
-## Grenzen na Fase 5
+## Alpaca Paper als eerste externe broker
 
-Geen externe dataleverancier, AI, externe paper broker of live broker. De API bindt
-lokaal aan `127.0.0.1`; SQLite is niet bedoeld voor meerdere productieservers. Externe
-deployment volgt later met PostgreSQL, HTTPS, rotatie van secrets en beheerde back-ups.
+De Alpaca-adapter ondersteunt voorlopig uitsluitend Amerikaanse USD-aandelen met gehele
+aantallen. Hij staat alleen de officiële paper-URL toe. Credentials komen uit de
+omgeving, worden niet gelogd en worden nooit aan web- of mobiele clients gegeven.
+
+```text
+Bot/strategie → risk engine → ReliableBrokerClient → AlpacaPaperBrokerAdapter
+                                                        ├── Trading API (paper)
+                                                        └── Market Data API (IEX)
+```
+
+De adapter is verwisselbaar: een latere IBKR-adapter implementeert hetzelfde contract.
+Een overgang naar IBKR vereist daardoor geen herschrijving van bots en risicoregels.
+
+## Grenzen na versie 0.7
+
+Nog geen echte Alpaca-credentials, AI of live broker. Fractionele aandelen en crypto
+zijn nog niet in het kerndomein gemodelleerd. De API bindt lokaal aan `127.0.0.1`;
+SQLite is niet bedoeld voor meerdere productieservers. Externe deployment volgt later
+met PostgreSQL, HTTPS, rotatie van secrets en beheerde back-ups.

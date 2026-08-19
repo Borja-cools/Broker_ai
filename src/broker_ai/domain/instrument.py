@@ -16,6 +16,9 @@ class Exchange(str, Enum):
     """Beurzen die onze eerste simulator ondersteunt."""
 
     EURONEXT_AMSTERDAM = "XAMS"
+    NASDAQ = "XNAS"
+    NEW_YORK_STOCK_EXCHANGE = "XNYS"
+    NYSE_ARCA = "ARCX"
 
 
 @dataclass(frozen=True)

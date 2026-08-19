@@ -14,6 +14,7 @@ class Currency(str, Enum):
     """Valuta's die onze portefeuille momenteel ondersteunt."""
 
     EUR = "EUR"
+    USD = "USD"
 
 
 @dataclass

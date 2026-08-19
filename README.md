@@ -1,13 +1,13 @@
 # Broker AI
 
 Broker AI is een stapsgewijs leerproject voor een veilige, testbare Python-backend
-rond beleggingssimulatie. De huidige versie werkt uitsluitend lokaal en bevat geen
-verbinding met een broker, geen echte marktorders en geen live trading.
+rond beleggingssimulatie. De huidige versie bevat een geteste, maar nog niet met echte
+sleutels verbonden Alpaca Paper-adapter. Live trading is technisch uitgesloten.
 
-> **Veiligheidsstatus:** alleen lokale simulatie is toegestaan. AI, paper trading en
-> live trading zijn nog niet aangesloten.
+> **Veiligheidsstatus:** lokale simulatie en Alpaca Paper zijn toegestaan. AI en live
+> trading zijn nog niet aangesloten.
 
-## Wat werkt al? (Fase 5)
+## Wat werkt al? (Fase 5 + Alpaca-fundament)
 
 - Gevalideerde configuratie met veilige standaardwaarden.
 - Cashportefeuille en posities met `Decimal`-berekeningen.
@@ -40,6 +40,10 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 - Gespecialiseerde bots met `manual`, `automatic_limited` of `disabled` goedkeuring.
 - Auditlog, request-ID's, gestructureerde logging, metrics en health check.
 - Consistente SQLite-back-up en Docker/deploymentconfiguratie.
+- USD-instrumenten op NASDAQ, NYSE en NYSE Arca.
+- Strikt paper-only Alpaca-adapter voor account, posities, IEX-koersdata en orders.
+- Expliciete vertaling van netwerk-, authenticatie- en brokerfouten.
+- Veilige alleen-lezen accountcontrole zonder orders te plaatsen.
 
 ## Vereisten
 
@@ -94,6 +98,17 @@ Bekijk de lokale asynchrone paper-brokerstroom:
 ```bash
 broker-ai broker-demo
 ```
+
+Controleer later een gekoppeld Alpaca Paper-account zonder een order te plaatsen:
+
+```bash
+export ALPACA_API_KEY_ID="jouw-paper-key"
+export ALPACA_API_SECRET_KEY="jouw-paper-secret"
+broker-ai alpaca-check
+```
+
+De adapter accepteert uitsluitend `https://paper-api.alpaca.markets`. Een live Alpaca-URL
+wordt vóór iedere netwerkverbinding geweigerd. Zet sleutels nooit in broncode of Git.
 
 Start de lokale API nadat je een geheim van minimaal 32 tekens hebt ingesteld:
 
@@ -167,6 +182,8 @@ broker-ai/
 - [Beslissing: verplichte risicopoort](docs/decisions/0004-mandatory-risk-gateway.md)
 - [Beslissing: asynchroon brokercontract](docs/decisions/0005-async-broker-contract.md)
 - [Beslissing: gespecialiseerde bots en goedkeuring](docs/decisions/0006-bot-approval-modes.md)
+- [Beslissing: Alpaca Paper vóór IBKR](docs/decisions/0007-alpaca-paper-before-ibkr.md)
+- [Alpaca-integratiechecklist](docs/alpaca-integration-checklist.md)
 - [Begrippenlijst](docs/learning-notes/glossary.md)
 - [Changelog](CHANGELOG.md)
 
