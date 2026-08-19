@@ -13,8 +13,9 @@ import secrets
 import time
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import PlainTextResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from broker_ai import __version__
 from broker_ai.server.database import Database
@@ -51,6 +52,7 @@ def create_app(
         raise RuntimeError("BROKER_AI_API_TOKEN moet minimaal 32 tekens bevatten.")
     database = Database(database_path or os.getenv("BROKER_AI_DATABASE_PATH", "data/broker_ai.db"))
     limiter = RateLimiter(rate_limit)
+    bearer_scheme = HTTPBearer(auto_error=False)
     counters = {"requests": 0, "errors": 0}
 
     @asynccontextmanager
@@ -88,12 +90,15 @@ def create_app(
         }))
         return response
 
-    def current_user(request: Request, authorization: str | None = Header(default=None)) -> dict:
+    def current_user(
+        request: Request,
+        credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    ) -> dict:
         client_host = request.client.host if request.client else "unknown"
         limiter.check(f"auth:{client_host}")
-        if not authorization or not authorization.startswith("Bearer "):
+        if credentials is None or credentials.scheme.lower() != "bearer":
             raise HTTPException(status_code=401, detail="Bearer-token ontbreekt.")
-        supplied = authorization.removeprefix("Bearer ").strip()
+        supplied = credentials.credentials.strip()
         supplied_hash = hashlib.sha256(supplied.encode()).hexdigest()
         user = next(
             (

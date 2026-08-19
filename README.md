@@ -139,6 +139,8 @@ broker-ai serve
 
 Open daarna [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) voor de interactieve
 API-documentatie. De server luistert standaard uitsluitend op je eigen computer.
+Gebruik daar bovenaan **Authorize** en vul alleen het token in; Swagger voegt zelf het
+woord `Bearer` toe aan ieder beveiligd verzoek.
 
 Toon beschikbare opties:
 

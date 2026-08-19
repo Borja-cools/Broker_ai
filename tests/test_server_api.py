@@ -55,7 +55,12 @@ class ServerApiTest(unittest.TestCase):
 
     def test_health_and_openapi_are_public(self) -> None:
         self.assertEqual(self.client.get("/health").json()["status"], "ok")
-        self.assertEqual(self.client.get("/openapi.json").status_code, 200)
+        openapi = self.client.get("/openapi.json")
+        self.assertEqual(openapi.status_code, 200)
+        self.assertEqual(
+            openapi.json()["components"]["securitySchemes"]["HTTPBearer"]["scheme"],
+            "bearer",
+        )
 
     def test_protected_endpoint_requires_valid_bearer_token(self) -> None:
         self.assertEqual(self.client.get("/api/v1/status").status_code, 401)

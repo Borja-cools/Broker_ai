@@ -2,6 +2,12 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.7.2 — Swagger Bearer-login
+
+- Officiële HTTP Bearer-securitydefinitie aan OpenAPI toegevoegd.
+- Eén algemene `Authorize`-knop in `/docs` in plaats van een defect los headerveld.
+- Authenticatie en OpenAPI-securityschema met regressietests afgedekt.
+
 ## 0.7.1 — Alpaca Paper-reconciliatie
 
 - Bestaande Alpaca-orders uit eerdere processen ophalen en normaliseren.
