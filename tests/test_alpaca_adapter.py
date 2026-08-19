@@ -2,6 +2,8 @@
 
 from datetime import datetime, timezone
 from decimal import Decimal
+from pathlib import Path
+import tempfile
 import unittest
 from uuid import UUID
 
@@ -15,7 +17,9 @@ from broker_ai.brokers import (
     ConnectionState,
 )
 from broker_ai.brokers.alpaca_onboarding import CONFIRMATION, run_first_paper_order
+from broker_ai.brokers.alpaca_sync import sync_alpaca_paper
 from broker_ai.domain import Currency, Exchange, Instrument, Order, OrderSide
+from broker_ai.server.database import Database
 
 
 ORDER_ID = "ca6d44fb-d169-4f34-bb82-73aaf4418467"
@@ -41,6 +45,8 @@ class FakeAlpaca:
         if path == "/v2/orders" and request.method == "POST":
             self.order_posts += 1
             return httpx.Response(200, json=self._order())
+        if path == "/v2/orders" and request.method == "GET":
+            return httpx.Response(200, json=[self._order()])
         if path == f"/v2/orders/{ORDER_ID}" and request.method == "DELETE":
             self.order_status = "canceled"
             return httpx.Response(204)
@@ -52,6 +58,12 @@ class FakeAlpaca:
         filled = self.order_status == "filled"
         return {
             "id": ORDER_ID,
+            "client_order_id": "7e6416a4-5082-4ac6-b63a-27876930574e",
+            "symbol": "AAPL",
+            "side": "buy",
+            "type": "limit",
+            "qty": "2",
+            "limit_price": "201.25",
             "status": self.order_status,
             "submitted_at": NOW,
             "updated_at": NOW,
@@ -99,6 +111,30 @@ class AlpacaPaperBrokerAdapterTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(first.broker_order_id, UUID(ORDER_ID))
         self.assertEqual(first.broker_order_id, second.broker_order_id)
         self.assertEqual(self.fake.order_posts, 1)
+
+    async def test_sync_persists_filled_order_position_and_audit(self) -> None:
+        self.fake.order_status = "filled"
+        with tempfile.TemporaryDirectory() as temporary:
+            database = Database(Path(temporary) / "broker_ai.db")
+            first = await sync_alpaca_paper(self.adapter, database)
+            second = await sync_alpaca_paper(self.adapter, database)
+
+            orders = database.fetchall("SELECT * FROM broker_orders")
+            positions = database.fetchall("SELECT * FROM broker_positions")
+            runs = database.fetchall("SELECT * FROM broker_sync_runs")
+            audits = database.fetchall(
+                "SELECT * FROM audit_logs WHERE event_type = ?",
+                ("broker.sync.completed",),
+            )
+
+        self.assertEqual(first["orders_seen"], 1)
+        self.assertEqual(second["positions_seen"], 1)
+        self.assertEqual(len(orders), 1)
+        self.assertEqual(orders[0]["status"], "filled")
+        self.assertEqual(orders[0]["average_fill_price"], "200.00")
+        self.assertEqual(positions[0]["symbol"], "AAPL")
+        self.assertEqual(len(runs), 2)
+        self.assertEqual(len(audits), 2)
 
     async def test_changed_order_with_same_client_id_is_rejected(self) -> None:
         first = Order(self.instrument, OrderSide.BUY, 2, Decimal("200"))

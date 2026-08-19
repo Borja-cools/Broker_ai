@@ -147,6 +147,15 @@ Bot/strategie → risk engine → ReliableBrokerClient → AlpacaPaperBrokerAdap
 De adapter is verwisselbaar: een latere IBKR-adapter implementeert hetzelfde contract.
 Een overgang naar IBKR vereist daardoor geen herschrijving van bots en risicoregels.
 
+Reconciliatie haalt recente orders en de volledige actuele positieset opnieuw bij Alpaca
+op. `broker_orders` gebruikt het brokerorder-ID als primaire sleutel, zodat een volgende
+run de status bijwerkt in plaats van een duplicaat te maken. Posities worden per
+geslaagde run atomair vervangen. Iedere run en voltooiing worden afzonderlijk bewaard.
+
+```text
+Alpaca Paper → alpaca-sync → SQLite → lokale REST API → later web/iOS-dashboard
+```
+
 ## Grenzen na versie 0.7
 
 Nog geen echte Alpaca-credentials, AI of live broker. Fractionele aandelen en crypto

@@ -14,11 +14,13 @@
 
 ## Na het aanmaken van een Alpaca Paper-account
 
-- [ ] Paper API-sleutels lokaal instellen; nooit opslaan in Git.
-- [ ] Alleen-lezen `broker-ai alpaca-check` uitvoeren.
+- [x] Paper API-sleutels lokaal instellen; nooit opslaan in Git.
+- [x] Alleen-lezen `broker-ai alpaca-check` uitvoeren.
 - [x] Begeleide eerste order met exacte bevestiging en verplichte risk engine bouwen.
-- [ ] Eén kleine handmatig bevestigde paper-order uitvoeren.
-- [ ] Order in Alpaca-dashboard vergelijken met Broker AI-auditlog.
+- [x] Eén kleine handmatig bevestigde paper-order uitvoeren.
+- [x] Orderuitvoering in het Alpaca-dashboard controleren.
+- [x] Idempotente orders, posities en sync-runs naar SQLite synchroniseren.
+- [ ] Gesynchroniseerde order met Broker AI-API en auditlog vergelijken.
 - [ ] Annulering, gedeeltelijke uitvoering en markt-sluiting observeren.
 - [ ] Dagelijkse reconciliatie en waarschuwingen activeren.
 - [ ] Minimaal meerdere weken zonder echt geld evalueren.

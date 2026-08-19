@@ -2,6 +2,15 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.7.1 — Alpaca Paper-reconciliatie
+
+- Bestaande Alpaca-orders uit eerdere processen ophalen en normaliseren.
+- Idempotente opslag van brokerorders, actuele posities en synchronisatieruns.
+- Status, gevuld aantal, limitprijs en gemiddelde uitvoeringsprijs vastleggen.
+- Iedere geslaagde synchronisatie als auditgebeurtenis bewaren.
+- Lees-API voor brokerorders, brokerposities en synchronisatiehistoriek.
+- Handmatig `broker-ai alpaca-sync` als veilige basis voor latere automatisering.
+
 ## 0.7.0 — Alpaca Paper-fundament
 
 - Strikt paper-only Alpaca-adapter achter het bestaande `BrokerInterface`.

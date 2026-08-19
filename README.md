@@ -120,6 +120,16 @@ broker-ai alpaca-first-order
 Dit commando is uitsluitend bedoeld nadat `alpaca-check` geslaagd is. Het kan geen live
 order plaatsen, maar verandert bij bevestiging wel de gesimuleerde Alpaca-portefeuille.
 
+Synchroniseer daarna recente orders, uitvoeringsprijzen en actuele posities naar SQLite:
+
+```bash
+broker-ai alpaca-sync
+```
+
+De gegevens zijn na een herstart van de lokale server zichtbaar via `/docs` onder
+`broker-orders`, `broker-positions` en `broker-sync-runs`. Herhaald synchroniseren werkt
+dezelfde order bij en maakt geen duplicaat.
+
 Start de lokale API nadat je een geheim van minimaal 32 tekens hebt ingesteld:
 
 ```bash

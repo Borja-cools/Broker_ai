@@ -1,5 +1,6 @@
 """Strikt paper-only adapter voor Alpaca's Trading API."""
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import os
@@ -30,6 +31,22 @@ from broker_ai.domain import Currency, Instrument, MarketPrice, Order, OrderSide
 
 PAPER_TRADING_URL = "https://paper-api.alpaca.markets"
 MARKET_DATA_URL = "https://data.alpaca.markets"
+
+
+@dataclass(frozen=True)
+class AlpacaOrderSnapshot:
+    broker_order_id: UUID
+    client_order_id: str | None
+    symbol: str
+    side: str
+    order_type: str
+    quantity: Decimal
+    filled_quantity: Decimal
+    limit_price: Decimal | None
+    average_fill_price: Decimal | None
+    status: str
+    submitted_at: datetime
+    updated_at: datetime
 
 
 class AlpacaPaperBrokerAdapter:
@@ -183,6 +200,45 @@ class AlpacaPaperBrokerAdapter:
             results.append(await self.get_order(order_id))
         return tuple(results)
 
+    async def get_recent_order_snapshots(self) -> tuple[AlpacaOrderSnapshot, ...]:
+        """Lees recente paper-orders, ook uit eerdere Broker AI-processen."""
+
+        payload = await self._request(
+            "GET",
+            f"{self._trading_url}/v2/orders",
+            params={"status": "all", "limit": "100", "direction": "desc"},
+        )
+        if not isinstance(payload, list):
+            raise BrokerError("Ongeldig orderlijstantwoord van Alpaca.")
+        snapshots = []
+        for item in payload:
+            try:
+                snapshots.append(
+                    AlpacaOrderSnapshot(
+                        broker_order_id=UUID(str(item["id"])),
+                        client_order_id=item.get("client_order_id"),
+                        symbol=str(item["symbol"]).strip().upper(),
+                        side=str(item["side"]),
+                        order_type=str(item["type"]),
+                        quantity=self._decimal(item["qty"], "orderaantal"),
+                        filled_quantity=self._decimal(
+                            item.get("filled_qty", "0"), "uitgevoerd aantal"
+                        ),
+                        limit_price=self._optional_decimal(item.get("limit_price")),
+                        average_fill_price=self._optional_decimal(
+                            item.get("filled_avg_price")
+                        ),
+                        status=str(item["status"]),
+                        submitted_at=self._parse_time(item["submitted_at"]),
+                        updated_at=self._parse_time(
+                            item.get("updated_at") or item["submitted_at"]
+                        ),
+                    )
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                raise BrokerError("Ongeldige order in Alpaca-orderlijst.") from exc
+        return tuple(snapshots)
+
     async def _request(
         self,
         method: str,
@@ -293,6 +349,12 @@ class AlpacaPaperBrokerAdapter:
         if number != number.to_integral_value() or number <= 0:
             raise BrokerError(f"{name.capitalize()} moet voorlopig een positief geheel getal zijn.")
         return int(number)
+
+    @classmethod
+    def _optional_decimal(cls, value: object) -> Decimal | None:
+        if value is None:
+            return None
+        return cls._decimal(value, "optioneel bedrag")
 
     @staticmethod
     def _parse_time(value: object) -> datetime:

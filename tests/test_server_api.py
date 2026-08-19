@@ -132,7 +132,18 @@ class ServerApiTest(unittest.TestCase):
         self.assertTrue({
             "users", "bots", "portfolio_snapshots", "analyses",
             "order_proposals", "audit_logs", "schema_migrations",
+            "broker_orders", "broker_positions", "broker_sync_runs",
         }.issubset(names))
+
+    def test_broker_sync_data_is_available_read_only(self) -> None:
+        database = self.client.app.state.database
+        database.execute(
+            "INSERT INTO broker_sync_runs VALUES(?,?,?,?,?,?,?,?)",
+            ("sync-1", "alpaca", "paper", 1, 1, "start", "end", "completed"),
+        )
+        response = self.client.get("/api/v1/broker-sync-runs", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()[0]["environment"], "paper")
 
     def test_database_backup_contains_persisted_bot(self) -> None:
         self.create_bot("manual")

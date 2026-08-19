@@ -40,6 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=(
             "demo", "backtest", "risk-demo", "broker-demo", "alpaca-check",
             "alpaca-first-order", "serve",
+            "alpaca-sync",
         ),
         help="Kies een volledig lokale Broker AI-demo.",
     )
@@ -81,6 +82,11 @@ def main(argv: Sequence[str] | None = None) -> None:
 
         print()
         print(asyncio.run(run_first_paper_order()))
+    elif arguments.command == "alpaca-sync":
+        from broker_ai.brokers.alpaca_sync import run_alpaca_sync
+
+        print()
+        print(asyncio.run(run_alpaca_sync()))
     elif arguments.command == "serve":
         import uvicorn
 

@@ -206,4 +206,20 @@ def create_app(
     def analyses(user: dict = Depends(current_user)) -> list[dict]:
         return database.fetchall("SELECT * FROM analyses ORDER BY created_at DESC")
 
+    @app.get("/api/v1/broker-orders", tags=["broker"])
+    def broker_orders(user: dict = Depends(current_user)) -> list[dict]:
+        return database.fetchall(
+            "SELECT * FROM broker_orders ORDER BY submitted_at DESC LIMIT 100"
+        )
+
+    @app.get("/api/v1/broker-positions", tags=["broker"])
+    def broker_positions(user: dict = Depends(current_user)) -> list[dict]:
+        return database.fetchall("SELECT * FROM broker_positions ORDER BY symbol")
+
+    @app.get("/api/v1/broker-sync-runs", tags=["broker"])
+    def broker_sync_runs(user: dict = Depends(current_user)) -> list[dict]:
+        return database.fetchall(
+            "SELECT * FROM broker_sync_runs ORDER BY completed_at DESC LIMIT 100"
+        )
+
     return app

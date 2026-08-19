@@ -35,6 +35,24 @@ CREATE TABLE IF NOT EXISTS audit_logs(
 INSERT OR IGNORE INTO schema_migrations(version) VALUES(1);
 """
 
+MIGRATION_2 = """
+CREATE TABLE IF NOT EXISTS broker_orders(
+ broker_order_id TEXT PRIMARY KEY, broker TEXT NOT NULL, environment TEXT NOT NULL,
+ client_order_id TEXT, symbol TEXT NOT NULL, side TEXT NOT NULL,
+ order_type TEXT NOT NULL, quantity TEXT NOT NULL, filled_quantity TEXT NOT NULL,
+ limit_price TEXT, average_fill_price TEXT, status TEXT NOT NULL,
+ submitted_at TEXT NOT NULL, updated_at TEXT NOT NULL, synced_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS broker_positions(
+ broker TEXT NOT NULL, environment TEXT NOT NULL, symbol TEXT NOT NULL,
+ quantity TEXT NOT NULL, average_price TEXT NOT NULL, synced_at TEXT NOT NULL,
+ PRIMARY KEY(broker, environment, symbol));
+CREATE TABLE IF NOT EXISTS broker_sync_runs(
+ id TEXT PRIMARY KEY, broker TEXT NOT NULL, environment TEXT NOT NULL,
+ orders_seen INTEGER NOT NULL, positions_seen INTEGER NOT NULL,
+ started_at TEXT NOT NULL, completed_at TEXT NOT NULL, status TEXT NOT NULL);
+INSERT OR IGNORE INTO schema_migrations(version) VALUES(2);
+"""
+
 
 class Database:
     def __init__(self, path: str | Path) -> None:
@@ -62,6 +80,7 @@ class Database:
     def migrate(self) -> None:
         connection = self.connect()
         connection.executescript(SCHEMA)
+        connection.executescript(MIGRATION_2)
         connection.commit()
         if self.path != ":memory:":
             connection.close()
