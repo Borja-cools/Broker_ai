@@ -3,6 +3,8 @@
 from typing import Protocol, runtime_checkable
 
 from broker_ai.brokers import Execution
+from broker_ai.brokers.interface import BrokerInterface
+from broker_ai.brokers.models import BrokerOrder
 from broker_ai.domain import Order, Portfolio
 from broker_ai.risk.engine import RiskEngine
 from broker_ai.risk.models import RiskAssessment, RiskContext
@@ -49,3 +51,23 @@ class RiskManagedBroker:
         if not assessment.approved:
             raise RiskRejectedError(assessment)
         return self._broker.execute(order, portfolio)
+
+
+class AsyncRiskManagedBroker:
+    """Async risicopoort voor het stabiele Fase 4-brokercontract."""
+
+    def __init__(self, broker: BrokerInterface, risk_engine: RiskEngine) -> None:
+        if not isinstance(broker, BrokerInterface):
+            raise TypeError("Broker moet het BrokerInterface-contract ondersteunen.")
+        if not isinstance(risk_engine, RiskEngine):
+            raise TypeError("Risk engine moet een RiskEngine zijn.")
+        self._broker = broker
+        self.risk_engine = risk_engine
+
+    async def submit_order(self, order: Order, context: RiskContext) -> BrokerOrder:
+        """Dien pas async in nadat alle bestaande risicoregels slagen."""
+
+        assessment = self.risk_engine.assess(order, context)
+        if not assessment.approved:
+            raise RiskRejectedError(assessment)
+        return await self._broker.submit_order(order)

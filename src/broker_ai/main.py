@@ -5,6 +5,7 @@ from collections.abc import Sequence
 import logging
 
 from broker_ai.backtesting.demo import run_backtest_demo
+from broker_ai.brokers.demo import run_broker_demo
 from broker_ai.config import Settings
 from broker_ai.observability import configure_logging
 from broker_ai.risk.demo import run_risk_demo
@@ -35,8 +36,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "command",
         nargs="?",
-        choices=("demo", "backtest", "risk-demo"),
-        help="Kies een lokale transactie-, backtest- of risicodemo.",
+        choices=("demo", "backtest", "risk-demo", "broker-demo"),
+        help="Kies een volledig lokale Broker AI-demo.",
     )
     return parser
 
@@ -63,6 +64,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     elif arguments.command == "risk-demo":
         print()
         print(run_risk_demo())
+    elif arguments.command == "broker-demo":
+        print()
+        print(run_broker_demo())
 
 
 if __name__ == "__main__":

@@ -2,6 +2,17 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.5.0 — Fase 4
+
+- Stabiel asynchroon `BrokerInterface` voor marktdata, account en orderlevenscyclus.
+- Verwisselbare simulator- en lokale paper-adapter zonder extern account.
+- Brokerneutrale verbindings-, account- en orderstatusmodellen.
+- Idempotente orderindiening en annulering met expliciete ID-conflicten.
+- Begrensde retries, time-outs en foutvertaling via `ReliableBrokerClient`.
+- Orderreconciliatie van submitted naar filled of rejected.
+- Async risicopoort vóór iedere paper-brokerorder.
+- Gedeelde adaptercontracttests, storingstests en lokale `broker-demo`.
+
 ## 0.4.0 — Fase 3
 
 - Onafhankelijke risk engine vóór iedere order in applicatie- en backteststromen.

@@ -69,6 +69,27 @@ Een technische fout in één regel wordt als afwijzing opgeslagen. De kill switc
 blokkeert iedere order. Normale blootstellingslimieten blokkeren nieuwe kooprisico's,
 maar laten verkopen toe zodat een positie bij verlies kan worden afgebouwd.
 
+## Brokeradaptergrens
+
+`BrokerInterface` is asynchroon en bevat marktdata, accountinformatie, verbindingsstatus,
+indienen, opvragen, annuleren en reconciliëren. Zowel `SimulatorBrokerAdapter` als
+`LocalPaperBrokerAdapter` volgen ditzelfde contract. De paper-adapter geeft een order
+eerst `submitted` en verwerkt hem pas tijdens reconciliatie.
+
+```text
+AsyncRiskManagedBroker
+          ↓
+ReliableBrokerClient  → time-out + begrensde retry
+          ↓
+BrokerInterface
+      ┌───┴────────────────┐
+SimulatorAdapter    LocalPaperAdapter
+```
+
+De interne order-ID is de idempotency-sleutel. Herhaling met identieke inhoud geeft
+dezelfde brokerorder terug; dezelfde ID met andere inhoud wordt als conflict geweigerd.
+Dit voorkomt dubbele orders wanneer een extern antwoord later verloren zou gaan.
+
 ## Toekomstige mobiele app
 
 De iOS/SwiftUI-app wordt later een client van een beveiligde server-API. Zij krijgt
@@ -91,8 +112,9 @@ De simulator valideert order, valuta, saldo/positie en auditmetadata voordat hij
 portefeuille wijzigt. Een geweigerde order levert geen cashmutatie, positiewijziging of
 transactie op. Een geslaagde order levert precies één `Transaction` op.
 
-## Grenzen na Fase 3
+## Grenzen na Fase 4
 
-Geen database, externe dataleverancier, netwerkverkeer, AI, paper broker
-of live broker. De huidige engine gebruikt één instrument en gehele aandelen. Data en
-resultaten leven tijdelijk in het geheugen.
+Geen database, externe dataleverancier, netwerkverkeer, AI, externe paper broker of
+live broker. De lokale paper-adapter bewaart alles tijdelijk in het geheugen. Een echte
+paper-adapter wordt pas gekozen nadat broker, landondersteuning en API-voorwaarden zijn
+beoordeeld.

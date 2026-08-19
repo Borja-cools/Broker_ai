@@ -38,3 +38,9 @@
 - **Cashreserve:** geld dat na een aankoop beschikbaar moet blijven.
 - **Kill switch:** noodstop die alle nieuwe orderuitvoering blokkeert.
 - **Fail-safe:** bij een onbekende of technische fout veilig stoppen in plaats van doorgaan.
+- **Adapter pattern:** extern systeem verbergen achter een stabiel intern contract.
+- **Async I/O:** tijdens een netwerkantwoord ander werk kunnen uitvoeren zonder blokkeren.
+- **Idempotency:** dezelfde bewerking veilig herhalen zonder een tweede effect te maken.
+- **Retry:** een tijdelijke fout een begrensd aantal keer opnieuw proberen.
+- **Time-out:** stoppen wanneer een extern antwoord te lang uitblijft.
+- **Reconciliatie:** lokale orderstatus vergelijken en bijwerken vanuit de brokerstatus.

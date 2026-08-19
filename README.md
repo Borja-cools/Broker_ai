@@ -7,7 +7,7 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 > **Veiligheidsstatus:** alleen lokale simulatie is toegestaan. AI, paper trading en
 > live trading zijn nog niet aangesloten.
 
-## Wat werkt al? (Fase 3)
+## Wat werkt al? (Fase 4)
 
 - Gevalideerde configuratie met veilige standaardwaarden.
 - Cashportefeuille en posities met `Decimal`-berekeningen.
@@ -28,6 +28,12 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 - Fail-safe kill switch en veilige afwijzing wanneer een risicoregel faalt.
 - Uitlegbare afwijzingsredenen en onveranderlijk auditlog van iedere controle.
 - Verplichte risicopoort in de transactie- en backtestdemo.
+- Async `BrokerInterface` voor status, marktdata, account, orders en annulering.
+- Verwisselbare simulator- en volledig lokale paper-adapter.
+- Asynchrone orderstatus: submitted, filled, cancelled of rejected.
+- Idempotente indiening en annulering zonder dubbele orderuitvoering.
+- Begrensde retries, time-outs en vertaling van tijdelijke brokerfouten.
+- Statusreconciliatie en gedeelde contracttests voor iedere adapter.
 
 ## Vereisten
 
@@ -75,6 +81,12 @@ Bekijk goedkeuring, afwijzing en de kill switch:
 
 ```bash
 broker-ai risk-demo
+```
+
+Bekijk de lokale asynchrone paper-brokerstroom:
+
+```bash
+broker-ai broker-demo
 ```
 
 Toon beschikbare opties:
@@ -131,10 +143,12 @@ broker-ai/
 - [Fase 1-checklist](docs/phase-1-checklist.md)
 - [Fase 2-checklist](docs/phase-2-checklist.md)
 - [Fase 3-checklist](docs/phase-3-checklist.md)
+- [Fase 4-checklist](docs/phase-4-checklist.md)
 - [Beslissing: simulation-first](docs/decisions/0001-simulation-first.md)
 - [Beslissing: scope van Fase 1](docs/decisions/0002-phase-1-domain-boundaries.md)
 - [Beslissing: tijdsvolgorde van backtests](docs/decisions/0003-next-open-backtesting.md)
 - [Beslissing: verplichte risicopoort](docs/decisions/0004-mandatory-risk-gateway.md)
+- [Beslissing: asynchroon brokercontract](docs/decisions/0005-async-broker-contract.md)
 - [Begrippenlijst](docs/learning-notes/glossary.md)
 - [Changelog](CHANGELOG.md)
 
