@@ -4,10 +4,10 @@ Broker AI is een stapsgewijs leerproject voor een veilige, testbare Python-backe
 rond beleggingssimulatie. De huidige versie werkt uitsluitend lokaal en bevat geen
 verbinding met een broker, geen echte marktorders en geen live trading.
 
-> **Veiligheidsstatus:** alleen `simulation` is toegestaan. AI, paper trading en live
-> trading maken geen deel uit van Fase 0.
+> **Veiligheidsstatus:** alleen lokale simulatie is toegestaan. AI, paper trading en
+> live trading zijn nog niet aangesloten.
 
-## Wat werkt al? (Fase 1)
+## Wat werkt al? (Fase 2)
 
 - Gevalideerde configuratie met veilige standaardwaarden.
 - Cashportefeuille en posities met `Decimal`-berekeningen.
@@ -18,6 +18,11 @@ verbinding met een broker, geen echte marktorders en geen live trading.
 - Unieke order- en transactie-ID's met een onveranderlijk auditlog.
 - Expliciet terminaldemoscenario en automatische tests.
 - Centrale logging en documentatie van architectuurkeuzes.
+- Import en strikte validatie van lokale historische OHLCV-data.
+- Strategiecontract en eenvoudige moving-average-referentiestrategie.
+- Reproduceerbare backtest met uitvoering op de volgende handelsdag.
+- Transactiekosten, slippage en buy-and-holdbenchmark.
+- Rendement, volatiliteit, maximale drawdown en Sharpe-achtige maatstaf.
 
 ## Vereisten
 
@@ -55,6 +60,12 @@ Voer een volledig lokale voorbeeldsimulatie uit:
 broker-ai demo
 ```
 
+Voer de vaste historische backtestdemo uit:
+
+```bash
+broker-ai backtest
+```
+
 Toon beschikbare opties:
 
 ```bash
@@ -90,10 +101,13 @@ broker-ai/
 ├── docs/                    architectuur, beslissingen en leernotities
 ├── src/broker_ai/
 │   ├── brokers/             lokale simulator; later broker-adapters
+│   ├── backtesting/         engine, prestatiemeting en veilige demo
 │   ├── config/              gevalideerde instellingen
+│   ├── data/                historische OHLCV-import en validatie
 │   ├── domain/              instrumenten, orders en portefeuille
 │   ├── observability/       logging; later metrics en alerts
-│   └── simulation/          expliciete, lokale scenario's
+│   ├── simulation/          expliciete, lokale scenario's
+│   └── strategies/          strategiecontract en referentiestrategieën
 ├── tests/                   automatische veiligheidstests
 └── pyproject.toml           pakket- en commando-instellingen
 ```
@@ -103,8 +117,10 @@ broker-ai/
 - [Architectuur](docs/architecture.md)
 - [Fase 0-checklist](docs/phase-0-checklist.md)
 - [Fase 1-checklist](docs/phase-1-checklist.md)
+- [Fase 2-checklist](docs/phase-2-checklist.md)
 - [Beslissing: simulation-first](docs/decisions/0001-simulation-first.md)
 - [Beslissing: scope van Fase 1](docs/decisions/0002-phase-1-domain-boundaries.md)
+- [Beslissing: tijdsvolgorde van backtests](docs/decisions/0003-next-open-backtesting.md)
 - [Begrippenlijst](docs/learning-notes/glossary.md)
 - [Changelog](CHANGELOG.md)
 

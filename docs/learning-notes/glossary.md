@@ -25,3 +25,10 @@
 - **Repository:** projectmap met Git-geschiedenis.
 - **Test:** automatische controle van verwacht gedrag.
 - **Virtual environment:** geïsoleerde Python-omgeving voor één project.
+- **OHLCV:** open, high, low, close en volume van één handelsperiode.
+- **Backtest:** simulatie van een strategie op historische marktdata.
+- **Look-ahead bias:** ongeldige voorsprong door informatie uit de toekomst te gebruiken.
+- **Slippage:** verschil tussen de zichtbare koers en de gesimuleerde uitvoeringsprijs.
+- **Drawdown:** procentuele daling vanaf een eerdere hoogste portefeuillewaarde.
+- **Survivorship bias:** vertekening doordat verdwenen beleggingen uit data ontbreken.
+- **Overfitting:** een strategie zo afstemmen dat zij historische ruis leert.

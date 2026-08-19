@@ -6,7 +6,7 @@ De kernlogica blijft onafhankelijk van terminal, API, database, mobiele app en e
 broker. Daardoor kunnen die onderdelen later worden toegevoegd zonder de financiële
 regels opnieuw te schrijven.
 
-## Huidige stroom
+## Transactiesimulatie
 
 ```text
 Terminalcommando
@@ -20,11 +20,30 @@ Order → SimulatedBroker → Portfolio + Transaction
 MarketPrice → PortfolioValuation → terminalrapport
 ```
 
+## Historische backtest
+
+```text
+Lokaal CSV-bestand → HistoricalDataset → gevalideerde OHLCV-bars
+                                             ↓
+Afgesloten bars → Strategy → signaal → volgende openingskoers
+                                             ↓
+                          SimulatedBroker → Portfolio
+                                             ↓
+                    Equity curve → metrics + benchmark → rapport
+```
+
+Een strategie ontvangt na iedere slotkoers alleen de historie die op dat moment bekend
+zou zijn. Een signaal wordt op zijn vroegst tegen de volgende openingskoers uitgevoerd.
+Transactiekosten en slippage maken de simulatie minder optimistisch.
+
 ## Verantwoordelijkheden
 
 - `domain`: financiële begrippen en invarianten; geen externe verbindingen.
 - `brokers`: atomaire uitvoering en auditlog; nu uitsluitend lokaal.
 - `simulation`: expliciete voorbeeldscenario's voor leren en testen.
+- `data`: historische koersmodellen en lokale CSV-import.
+- `strategies`: zuivere beslislogica zonder toegang tot geld of broker.
+- `backtesting`: tijdsvolgorde, orderuitvoering, equity curve en statistieken.
 - `config`: veilige, gevalideerde instellingen.
 - `observability`: uniforme diagnostische informatie.
 - `main`: dun startpunt dat invoer naar de juiste use-case leidt.
@@ -51,7 +70,8 @@ De simulator valideert order, valuta, saldo/positie en auditmetadata voordat hij
 portefeuille wijzigt. Een geweigerde order levert geen cashmutatie, positiewijziging of
 transactie op. Een geslaagde order levert precies één `Transaction` op.
 
-## Grenzen na Fase 1
+## Grenzen na Fase 2
 
-Geen database, externe marktdata, netwerkverkeer, backtest-engine, AI, paper broker of
-live broker. Alle portfolio- en transactie-informatie leeft tijdelijk in het geheugen.
+Geen database, externe dataleverancier, netwerkverkeer, risk engine, AI, paper broker
+of live broker. De huidige engine gebruikt één instrument en gehele aandelen. Data en
+resultaten leven tijdelijk in het geheugen.

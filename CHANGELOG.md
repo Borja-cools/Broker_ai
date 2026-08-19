@@ -2,6 +2,16 @@
 
 Alle belangrijke wijzigingen aan Broker AI worden hier per projectfase bijgehouden.
 
+## 0.3.0 — Fase 2
+
+- Lokale CSV-import en validatie van historische OHLCV-data.
+- Vast strategiecontract en moving-average-referentiestrategie.
+- Backtest-engine zonder look-ahead bias: signalen vullen op de volgende opening.
+- Instelbare transactiekosten en slippage voor gehele aandelen.
+- Reproduceerbare equity curve met buy-and-holdbenchmark.
+- Rapportage van rendement, volatiliteit, maximale drawdown en Sharpe-achtige maatstaf.
+- Veilige terminaldemo via `broker-ai backtest` en tests voor tijdsvolgorde.
+
 ## 0.2.0 — Fase 1
 
 - Volledige instrument-, order-, positie- en portefeuillemodellen.
